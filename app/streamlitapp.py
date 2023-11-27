@@ -39,26 +39,13 @@ if options:
             # Rendering inside of the app
             video = open('test_video.mp4', 'rb')
         video_bytes = video.read() 
-        st.info(tf.shape(video_bytes))
         st.video(video_bytes)
 
 
     with col2: 
         st.info('This is all the machine learning model sees when making a prediction')
-        st.info(selected_video.lower().split(".")[-1])
         file_path = os.path.join('.','data','s1', selected_video)
         if selected_video.lower().split(".")[-1] in ["mp4", "avi", "mkv", "mov", "wmv", "flv"]:
-            # video=open(file_path,'rb')
-            # cap = cv2.VideoCapture(file_path)
-            # video = []
-            # while cap.isOpened():
-            #     ret, frame = cap.read()
-            #     if not ret:
-            #         break
-            #     video.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))  # Convert BGR to RGB
-            # video = [cv2.resize(frame, (140, 46)) for frame in video]
-            # if video.shape[1] > 75:
-            #     video = video[:, :75, ...]
 
             video=load_video(file_path)
             video=video[:75,...]
@@ -68,11 +55,8 @@ if options:
                 num_empty_frames = 75 - video.shape[0]
                 video = np.pad(video, [(0, num_empty_frames), (0, 0),  (0, 0), (0, 0)], mode='constant', constant_values=0)
 
-            st.info(tf.shape(video))
-            #cap.release()
         else:
             video, annotations = load_data(tf.convert_to_tensor(file_path))
-            st.info(tf.shape(video))
         video=np.array(video).squeeze()
         imageio.mimsave('animation.gif', video, fps=10)
         st.image('animation.gif', width=400) 
