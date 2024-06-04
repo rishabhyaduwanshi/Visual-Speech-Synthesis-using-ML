@@ -2,7 +2,7 @@ import tensorflow as tf
 from typing import List
 import cv2
 import os 
-
+from mouth_cropper2 import mouth_cropper 
 vocab = [x for x in "abcdefghijklmnopqrstuvwxyz'?!123456789 "]
 char_to_num = tf.keras.layers.StringLookup(vocabulary=vocab, oov_token="")
 # Mapping integers back to original characters
@@ -13,7 +13,8 @@ num_to_char = tf.keras.layers.StringLookup(
 def load_video(path:str) -> List[float]: 
     #print(path)
     cap = cv2.VideoCapture(path)
-    frames = []
+    # frames = mouth_cropper(path)
+    frames=[]
     for _ in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))): 
         ret, frame = cap.read()
         frame = tf.image.rgb_to_grayscale(frame)
@@ -46,3 +47,7 @@ def load_data(path: str):
     alignments = load_alignments(alignment_path)
     
     return frames, alignments
+
+def nums_to_chars(decoder,selected_video=None):
+    converted_prediction = tf.strings.reduce_join(num_to_char(decoder)).numpy().decode('utf-8')     
+    return converted_prediction
